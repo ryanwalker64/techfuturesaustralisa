@@ -3,15 +3,12 @@
 
   SETUP REQUIRED IN WEBFLOW DESIGNER:
   1. Add a Select field to your form with:
-     - Name: "role"
+     - Name: "ORG"
      - Options: "" (placeholder), "Carer", "Industry", "School"
   2. Add a Div Block inside the form with ID: "school-wrapper"
   3. Inside that div, add a Text Input field with:
-     - Name: "school"
+     - Name: "SCHOOL"
      - Placeholder: "Search for your school..."
-
-  SETUP REQUIRED IN MAILCHIMP:
-  - Add merge fields: ROLE (dropdown) and SCHOOL (text) to your audience
 
   HOSTING:
   - Upload schools.json to a CDN and update the SCHOOLS_JSON_URL below
@@ -57,11 +54,11 @@
   var SCHOOLS_JSON_URL = 'https://cdn.jsdelivr.net/gh/ryanwalker64/techfuturesaustralisa/schools.json';
 
   document.addEventListener('DOMContentLoaded', function() {
-    var roleSelect = document.querySelector('select[name="role"]');
+    var orgSelect = document.querySelector('select[name="ORG"]');
     var schoolWrapper = document.getElementById('school-wrapper');
-    var schoolInput = document.querySelector('#school-wrapper input[name="school"]');
+    var schoolInput = document.querySelector('#school-wrapper input[name="SCHOOL"]');
 
-    if (!roleSelect || !schoolWrapper || !schoolInput) {
+    if (!orgSelect || !schoolWrapper || !schoolInput) {
       console.warn('School form: Missing required elements. Check that role select, #school-wrapper, and school input exist.');
       return;
     }
@@ -70,8 +67,8 @@
     var schoolsLoaded = false;
 
     // Toggle school dropdown visibility based on role
-    roleSelect.addEventListener('change', function() {
-      if (roleSelect.value === 'School') {
+    orgSelect.addEventListener('change', function() {
+      if (orgSelect.value === 'School') {
         schoolWrapper.classList.add('visible');
         if (!schoolsLoaded) {
           loadSchools();
