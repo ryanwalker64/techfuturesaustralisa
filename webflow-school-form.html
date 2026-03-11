@@ -1,0 +1,137 @@
+<!--
+  WEBFLOW CUSTOM CODE — Paste into Page Settings > Custom Code > Before </body>
+
+  SETUP REQUIRED IN WEBFLOW DESIGNER:
+  1. Add a Select field to your form with:
+     - Name: "role"
+     - Options: "" (placeholder), "Carer", "Industry", "School"
+  2. Add a Div Block inside the form with ID: "school-wrapper"
+  3. Inside that div, add a Text Input field with:
+     - Name: "school"
+     - Placeholder: "Search for your school..."
+
+  SETUP REQUIRED IN MAILCHIMP:
+  - Add merge fields: ROLE (dropdown) and SCHOOL (text) to your audience
+
+  HOSTING:
+  - Upload schools.json to a CDN and update the SCHOOLS_JSON_URL below
+-->
+
+<!-- Tom Select: searchable dropdown library -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+
+<style>
+  #school-wrapper {
+    display: none;
+  }
+  #school-wrapper.visible {
+    display: block;
+  }
+  /* Match Tom Select styling to your Webflow form */
+  .ts-wrapper .ts-control {
+    border: 1px solid #e2e2e2;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+  .ts-wrapper .ts-control input {
+    font-size: 14px;
+  }
+  .ts-dropdown {
+    font-size: 14px;
+  }
+  .ts-dropdown .option {
+    padding: 8px 12px;
+  }
+  .ts-dropdown .option .school-suburb {
+    color: #888;
+    font-size: 12px;
+  }
+</style>
+
+<script>
+(function() {
+  // ⚠️ UPDATE THIS URL to where you host schools.json
+  var SCHOOLS_JSON_URL = 'https://cdn.jsdelivr.net/gh/YOUR_USERNAME/school-data/schools.json';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var roleSelect = document.querySelector('select[name="role"]');
+    var schoolWrapper = document.getElementById('school-wrapper');
+    var schoolInput = document.querySelector('#school-wrapper input[name="school"]');
+
+    if (!roleSelect || !schoolWrapper || !schoolInput) {
+      console.warn('School form: Missing required elements. Check that role select, #school-wrapper, and school input exist.');
+      return;
+    }
+
+    var tomSelectInstance = null;
+    var schoolsLoaded = false;
+
+    // Toggle school dropdown visibility based on role
+    roleSelect.addEventListener('change', function() {
+      if (roleSelect.value === 'School') {
+        schoolWrapper.classList.add('visible');
+        if (!schoolsLoaded) {
+          loadSchools();
+        }
+      } else {
+        schoolWrapper.classList.remove('visible');
+        // Clear selection when switching away
+        if (tomSelectInstance) {
+          tomSelectInstance.clear();
+        }
+      }
+    });
+
+    function loadSchools() {
+      schoolsLoaded = true;
+
+      fetch(SCHOOLS_JSON_URL)
+        .then(function(res) { return res.json(); })
+        .then(function(schools) {
+          var options = schools.map(function(s) {
+            var label = s.name;
+            var detail = '';
+            if (s.suburb && s.state) {
+              detail = s.suburb + ', ' + s.state;
+            } else if (s.suburb) {
+              detail = s.suburb;
+            } else if (s.state) {
+              detail = s.state;
+            }
+
+            return {
+              value: detail ? s.name + ' - ' + detail : s.name,
+              name: s.name,
+              detail: detail
+            };
+          });
+
+          tomSelectInstance = new TomSelect(schoolInput, {
+            options: options,
+            valueField: 'value',
+            searchField: ['name', 'detail'],
+            maxOptions: 50,
+            placeholder: 'Search for your school...',
+            render: {
+              option: function(data, escape) {
+                return '<div>' +
+                  '<span>' + escape(data.name) + '</span>' +
+                  (data.detail ? ' <span class="school-suburb">' + escape(data.detail) + '</span>' : '') +
+                  '</div>';
+              },
+              item: function(data, escape) {
+                return '<div>' + escape(data.value) + '</div>';
+              }
+            }
+          });
+        })
+        .catch(function(err) {
+          console.error('Failed to load schools:', err);
+        });
+    }
+  });
+})();
+</script>
