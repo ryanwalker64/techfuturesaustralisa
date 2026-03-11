@@ -11,6 +11,11 @@
       return;
     }
 
+    // Immediately hide the original Webflow text input
+    schoolInput.style.display = 'none';
+    schoolInput.style.setProperty('display', 'none', 'important');
+    schoolInput.removeAttribute('name');
+
     var tomSelectInstance = null;
     var schoolsLoaded = false;
 
@@ -32,9 +37,6 @@
     function loadSchools() {
       schoolsLoaded = true;
 
-      // Remove the original Webflow input name so it doesn't submit
-      schoolInput.removeAttribute('name');
-
       // Create a <select> element for Tom Select
       var selectEl = document.createElement('select');
       selectEl.name = 'SCHOOL';
@@ -43,7 +45,6 @@
       // Add an empty default option for placeholder
       var emptyOpt = document.createElement('option');
       emptyOpt.value = '';
-      emptyOpt.textContent = '';
       selectEl.appendChild(emptyOpt);
 
       fetch(SCHOOLS_JSON_URL)
@@ -77,6 +78,7 @@
             placeholder: 'Select school',
             allowEmptyOption: true,
             closeAfterSelect: true,
+            plugins: ['clear_button'],
             render: {
               option: function(data, escape) {
                 return '<div>' +
@@ -87,12 +89,6 @@
               item: function(data, escape) {
                 return '<div>' + escape(data.value) + '</div>';
               }
-            },
-            onItemAdd: function() {
-              tomSelectInstance.control_input.readOnly = true;
-            },
-            onItemRemove: function() {
-              tomSelectInstance.control_input.readOnly = false;
             }
           });
         })
