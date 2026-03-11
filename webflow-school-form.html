@@ -6,12 +6,10 @@
      - Name: "ORG"
      - Options: "" (placeholder), "Carer", "Industry", "School"
   2. Add a Div Block inside the form with ID: "school-wrapper"
-  3. Inside that div, add a Text Input field with:
-     - Name: "SCHOOL"
-     - Placeholder: "Search for your school..."
-
-  HOSTING:
-  - Upload schools.json to a CDN and update the SCHOOLS_JSON_URL below
+  3. Inside that div, add:
+     - A Label with text "School"
+     - A Text Input field with Name: "SCHOOL"
+     (Both the label AND input must be inside school-wrapper so they hide together)
 -->
 
 <!-- Tom Select: searchable dropdown library -->
@@ -26,9 +24,9 @@
     display: block;
   }
 
-  /* Hide the original Webflow input once Tom Select takes over */
-  #school-wrapper input[name="SCHOOL"].tomselected {
-    display: none;
+  /* Hide the original Webflow text input */
+  #school-wrapper input[name="SCHOOL"] {
+    display: none !important;
   }
 
   /* Tom Select wrapper */
@@ -92,7 +90,6 @@
 
 <script>
 (function() {
-  // ⚠️ UPDATE THIS URL to where you host schools.json
   var SCHOOLS_JSON_URL = 'https://cdn.jsdelivr.net/gh/ryanwalker64/techfuturesaustralisa/schools.json';
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -101,14 +98,14 @@
     var schoolInput = document.querySelector('#school-wrapper input[name="SCHOOL"]');
 
     if (!orgSelect || !schoolWrapper || !schoolInput) {
-      console.warn('School form: Missing required elements. Check that role select, #school-wrapper, and school input exist.');
+      console.warn('School form: Missing required elements. Check that ORG select, #school-wrapper, and SCHOOL input exist.');
       return;
     }
 
     var tomSelectInstance = null;
     var schoolsLoaded = false;
 
-    // Toggle school dropdown visibility based on role
+    // Toggle school dropdown visibility based on organisation type
     orgSelect.addEventListener('change', function() {
       if (orgSelect.value === 'School') {
         schoolWrapper.classList.add('visible');
@@ -117,7 +114,6 @@
         }
       } else {
         schoolWrapper.classList.remove('visible');
-        // Clear selection when switching away
         if (tomSelectInstance) {
           tomSelectInstance.clear();
         }
@@ -127,11 +123,16 @@
     function loadSchools() {
       schoolsLoaded = true;
 
+      // Create a <select> element to replace the text input
+      // This gives proper single-select behavior (locks after pick)
+      var selectEl = document.createElement('select');
+      selectEl.name = 'SCHOOL';
+      schoolInput.parentNode.insertBefore(selectEl, schoolInput);
+
       fetch(SCHOOLS_JSON_URL)
         .then(function(res) { return res.json(); })
         .then(function(schools) {
           var options = schools.map(function(s) {
-            var label = s.name;
             var detail = '';
             if (s.suburb && s.state) {
               detail = s.suburb + ', ' + s.state;
@@ -148,13 +149,14 @@
             };
           });
 
-          tomSelectInstance = new TomSelect(schoolInput, {
-            maxItems: 1,
+          tomSelectInstance = new TomSelect(selectEl, {
             options: options,
             valueField: 'value',
+            labelField: 'value',
             searchField: ['name', 'detail'],
             maxOptions: 50,
-            placeholder: 'Search for your school...',
+            placeholder: 'Select school',
+            allowEmptyOption: true,
             render: {
               option: function(data, escape) {
                 return '<div>' +
