@@ -36,6 +36,7 @@
       // This gives proper single-select behavior (locks after pick)
       var selectEl = document.createElement('select');
       selectEl.name = 'SCHOOL';
+      selectEl.classList.add('mint-form-border-square');
       schoolInput.parentNode.insertBefore(selectEl, schoolInput);
 
       fetch(SCHOOLS_JSON_URL)
