@@ -60,6 +60,7 @@
           });
 
           tomSelectInstance = new TomSelect(selectEl, {
+            maxItems: 1,
             options: options,
             valueField: 'value',
             labelField: 'value',
@@ -67,6 +68,7 @@
             maxOptions: 50,
             placeholder: 'Select school',
             allowEmptyOption: true,
+            wrapperClass: 'ts-wrapper mint-form-border-square',
             render: {
               option: function(data, escape) {
                 return '<div>' +
