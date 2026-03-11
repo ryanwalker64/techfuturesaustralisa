@@ -4,17 +4,18 @@
   document.addEventListener('DOMContentLoaded', function() {
     var orgSelect = document.querySelector('select[name="ORG"]');
     var schoolWrapper = document.getElementById('school-wrapper');
-    var schoolInput = document.querySelector('#school-wrapper input[name="SCHOOL"]');
 
-    if (!orgSelect || !schoolWrapper || !schoolInput) {
-      console.warn('School form: Missing required elements. Check that ORG select, #school-wrapper, and SCHOOL input exist.');
+    if (!orgSelect || !schoolWrapper) {
+      console.warn('School form: Missing required elements. Check that ORG select and #school-wrapper exist.');
       return;
     }
 
-    // Immediately hide the original Webflow text input
-    schoolInput.style.display = 'none';
-    schoolInput.style.setProperty('display', 'none', 'important');
-    schoolInput.removeAttribute('name');
+    // Remove any existing SCHOOL input that Webflow may have added
+    var existingInput = schoolWrapper.querySelector('input[name="SCHOOL"]');
+    if (existingInput) {
+      existingInput.style.setProperty('display', 'none', 'important');
+      existingInput.removeAttribute('name');
+    }
 
     var tomSelectInstance = null;
     var schoolsLoaded = false;
@@ -40,7 +41,7 @@
       // Create a <select> element for Tom Select
       var selectEl = document.createElement('select');
       selectEl.name = 'SCHOOL';
-      schoolInput.parentNode.insertBefore(selectEl, schoolInput);
+      schoolWrapper.appendChild(selectEl);
 
       // Add an empty default option for placeholder
       var emptyOpt = document.createElement('option');
