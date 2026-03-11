@@ -9,6 +9,10 @@
 #school-wrapper input[name="SCHOOL"] {
   display: none !important;
 }
+/* Hide the original select that Tom Select replaces */
+#school-wrapper select.ts-hidden-accessible {
+  display: none !important;
+}
 
 /* Tom Select wrapper */
 #school-wrapper .ts-wrapper {
@@ -16,30 +20,39 @@
   width: 100%;
 }
 
-/* The control (input area) */
+/* The control (input area) — mint green border */
 #school-wrapper .ts-wrapper .ts-control {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
+  border: 1px solid #7BE0C4;
+  border-radius: 8px;
   padding: 8px 12px;
-  font-size: 14px;
+  font-size: 16px;
   min-height: 44px;
   color: #fff;
   cursor: text;
+  box-shadow: none;
+}
+#school-wrapper .ts-wrapper.focus .ts-control {
+  border-color: #7BE0C4;
+  box-shadow: 0 0 0 1px #7BE0C4;
 }
 #school-wrapper .ts-wrapper .ts-control input {
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
 }
 #school-wrapper .ts-wrapper .ts-control input::placeholder {
   color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
 }
+
 /* Selected item styling */
 #school-wrapper .ts-wrapper .ts-control .item {
   color: #fff;
   background: none;
   border: none;
   padding: 0;
+  font-size: 16px;
+  max-width: 100%;
 }
 
 /* Dropdown */
@@ -48,22 +61,28 @@
   z-index: 1000;
   background: #fff;
   color: #333;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #7BE0C4;
+  border-radius: 8px;
   margin-top: 4px;
-  font-size: 14px;
+  font-size: 16px;
   max-height: 300px;
   overflow-y: auto;
 }
 #school-wrapper .ts-dropdown .option {
-  padding: 8px 12px;
+  padding: 10px 12px;
   cursor: pointer;
+  font-size: 16px;
 }
 #school-wrapper .ts-dropdown .option:hover,
 #school-wrapper .ts-dropdown .option.active {
-  background: #f0f0f0;
+  background: rgba(123, 224, 196, 0.15);
 }
 #school-wrapper .ts-dropdown .option .school-suburb {
   color: #888;
-  font-size: 12px;
+  font-size: 13px;
+}
+#school-wrapper .ts-dropdown .no-results {
+  padding: 10px 12px;
+  font-size: 16px;
+  color: #888;
 }
